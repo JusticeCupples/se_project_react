@@ -1,0 +1,66 @@
+.switch {
+  margin-left: auto;
+  display: flex;
+  position: relative;
+  right: 40px;
+  bottom: 14px;
+  margin-right: 20px;
+}
+
+.switch_box {
+  border-radius: 25px;
+  border: 2px solid black;
+  width: 50px;
+  height: 30px;
+  appearance: none;
+  position: absolute;
+}
+
+.switch_slider {
+  border-radius: 20px;
+  width: 30px;
+  height: 30px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  position: absolute;
+  transition: left 0.3s ease;
+}
+
+.switch_slider-F {
+  left: 23px;
+}
+
+.switch_slider-C {
+  left: 0;
+}
+
+.switch_active {
+  color: white;
+  visibility: visible;
+}
+
+.switch_temp-C {
+  left: 8px;
+  top: -6px;
+  position: absolute;
+  font-family: "Cabinet Grotesk";
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 17.36px;
+  text-align: center;
+  color: #f3f3f3;
+}
+
+.switch_temp-F {
+  position: absolute;
+  left: 35px;
+  top: -6px;
+  font-family: "Cabinet Grotesk";
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 17.36px;
+  text-align: center;
+  color: #f3f3f3;
+}

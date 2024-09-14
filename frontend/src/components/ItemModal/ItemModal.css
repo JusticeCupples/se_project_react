@@ -1,0 +1,60 @@
+.modal__image {
+  height: 498px;
+  max-width: 498px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal__content_type_image {
+  padding: 0;
+  margin: 0;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.modal__caption {
+  margin: 20px 0 12px 32px;
+  font-family: Cabinet Grotesk;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: left;
+  max-width: 100px;
+}
+
+.modal__text {
+  max-width: 200px;
+  margin-left: -20px;
+}
+
+.modal__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: Cabinet Grotesk;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: left;
+  padding: 20px 32px;
+}
+
+.modal__weather {
+  margin: 0 0 32px 32px;
+  font-family: Cabinet Grotesk;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: left;
+  max-width: 150px;
+}
+
+.modal__delete-button {
+  background: none;
+  color: red;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-top: -40px;
+}

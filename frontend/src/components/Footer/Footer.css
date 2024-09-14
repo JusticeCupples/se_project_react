@@ -1,0 +1,24 @@
+.footer {
+  padding: 0 80px;
+  display: flex;
+  align-items: center;
+  padding-top: 80px;
+  padding-bottom: 24px;
+}
+.footer__name {
+  margin: 0;
+  font-family: Cabinet Grotesk;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: left;
+}
+
+.footer__year {
+  margin: 0 2px 0 auto;
+  font-family: Cabinet Grotesk;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: right;
+}

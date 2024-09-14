@@ -1,0 +1,22 @@
+.card__items {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 36px 0 0 80px;
+  padding: 0;
+  list-style-type: none;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card__section {
+  margin-top: 40px;
+  font-family: Cabinet Grotesk;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24.8px;
+  text-align: left;
+}
+
+.card__text {
+  margin-left: 80px;
+}

@@ -1,0 +1,72 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 0 28px 0;
+}
+
+.header__left {
+  display: flex;
+  align-items: center;
+  padding-left: 80px;
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-right: 60px;
+}
+
+.header__logo-img {
+  margin-right: 12px;
+}
+
+.header__date {
+  margin-left: 12px;
+  font-family: Cabinet Grotesk;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: left;
+}
+
+.header__button {
+  font-family: "Cabinet Grotesk";
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  background: none;
+}
+
+.header__user-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header__link {
+  text-decoration: none;
+}
+
+.header__username {
+  margin: 0;
+  font-family: "Cabinet Grotesk";
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24.8px;
+  text-align: left;
+  text-decoration: none;
+  color: black;
+}
+
+.header__avatar {
+  border: 1px solid #00000080;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
+}

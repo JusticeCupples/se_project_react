@@ -1,12 +1,5 @@
 const BASE_URL = "http://localhost:3001";
 
-const checkResponse = (res) => {
-  if (res.ok) {
-    return res.json();
-  }
-  return Promise.reject(`Error: ${res.status}`);
-};
-
 export const register = ({ name, avatar, email, password }) => {
   return fetch(`${BASE_URL}/signup`, {
     method: "POST",
@@ -35,4 +28,32 @@ export const checkToken = (token) => {
       authorization: `Bearer ${token}`,
     },
   }).then(checkResponse);
+};
+
+export const updateProfile = ({ name, avatar }) => {
+  const token = localStorage.getItem("jwt");
+  return fetch(`${BASE_URL}/users/me`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name, avatar }),
+  })
+    .then(checkResponse)
+    .then(data => {
+      console.log("Update profile response:", data);
+      return data;
+    })
+    .catch(error => {
+      console.error("Error updating profile:", error);
+      throw error;
+    });
+};
+
+const checkResponse = (res) => {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Error: ${res.status}`);
 };

@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./ItemModal.css";
 import close from "../../assets/close.svg";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 function ItemModal({ activeModal, onClose, card, onDelete }) {
+  const currentUser = useContext(CurrentUserContext);
+  const isOwn = card.owner === currentUser._id;
+
+  const itemDeleteButtonClassName = `modal__delete-button ${
+    isOwn ? "modal__delete-button_visible" : "modal__delete-button_hidden"
+  }`;
+
   return (
     <div
       className={`modal modal__item ${
@@ -20,7 +28,7 @@ function ItemModal({ activeModal, onClose, card, onDelete }) {
             <p className="modal__weather">Weather: {card.weather}</p>
           </div>
           <button
-            className="modal__delete-button"
+            className={itemDeleteButtonClassName}
             onClick={() => onDelete(card)}
           >
             Delete item

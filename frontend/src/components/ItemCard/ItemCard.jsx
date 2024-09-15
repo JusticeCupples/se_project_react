@@ -1,23 +1,16 @@
 import React from "react";
 import "./ItemCard.css";
-import placeholder from "../../assets/logo.svg";
 
 function ItemCard({ item, onSelectCard }) {
-  const handleClick = () => {
-    onSelectCard(item);
-  };
+  if (!item || !item.imageUrl || !item.name) {
+    console.error("Invalid item data:", item);
+    return null; // Don't render anything if the item data is invalid
+  }
 
   return (
-    <div className="item-card" onClick={handleClick}>
-      <img
-        src={item.imageUrl}
-        alt={item.name}
-        className="item-card__image"
-        onError={(e) => {
-          e.target.src = placeholder;
-        }}
-      />
-      <p className="item-card__name">{item.name}</p>
+    <div className="item-card" onClick={() => onSelectCard(item)}>
+      <img src={item.imageUrl} alt={item.name} className="item-card__image" />
+      <div className="item-card__name">{item.name}</div>
     </div>
   );
 }

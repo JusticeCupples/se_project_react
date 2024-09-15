@@ -14,7 +14,7 @@ function ClothesSection({ filteredCards = [], onSelectCard, onCreateModal }) {
       <div className="clothes-section__items">
         {filteredCards.length > 0 ? (
           filteredCards.map((item) => (
-            <ItemCard key={item._id} item={item} onSelectCard={onSelectCard} />
+            <ItemCard key={item._id || item.id || `item_${item.name}`} item={item} onSelectCard={onSelectCard} />
           ))
         ) : (
           <p>No items available for the current weather.</p>

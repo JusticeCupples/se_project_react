@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import ModalWithForm from "./ModalWithForm/ModalWithForm";
+import ModalWithForm from "../ModalWithForm/ModalWithForm";
 
-const RegisterModal = ({ isOpen, onClose, onRegister }) => {
+const RegisterModal = ({ isOpen, onClose, onRegister, onLoginClick }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -14,14 +14,15 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
 
   return (
     <ModalWithForm
-      title="Sign up"
+      title="Sign Up"
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit}
-      buttonText="Next"
+      buttonText="Sign Up"
+      name="register"
     >
       <label className="modal__label">
-        Email
+        Email *
         <input
           type="email"
           name="email"
@@ -33,7 +34,7 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
         />
       </label>
       <label className="modal__label">
-        Password
+        Password *
         <input
           type="password"
           name="password"
@@ -42,10 +43,11 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
           placeholder="Password"
           className="modal__input"
           required
+          autoComplete="new-password"
         />
       </label>
       <label className="modal__label">
-        Name
+        Name *
         <input
           type="text"
           name="name"
@@ -57,7 +59,7 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
         />
       </label>
       <label className="modal__label">
-        Avatar URL
+        Avatar URL *
         <input
           type="url"
           name="avatar"
@@ -68,6 +70,9 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
           required
         />
       </label>
+      <button type="button" onClick={onLoginClick} className="modal__button modal__button_type_secondary">
+        or Log In
+      </button>
     </ModalWithForm>
   );
 };

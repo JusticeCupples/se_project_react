@@ -1,25 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ModalWithForm.css";
 import closeIcon from "../../assets/close.svg";
 
-const ModalWithForm = ({
-  title,
-  onClose,
-  isOpen,
-  onSubmit,
-  buttonText,
-  children,
-}) => {
+const ModalWithForm = ({ title, children, buttonText, onClose, isOpen, onSubmit, name }) => {
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  const handleFormChange = (e) => {
+    setIsFormValid(e.target.checkValidity());
+  };
+
   return (
     <div className={`modal ${isOpen ? "modal_opened" : ""}`}>
       <div className="modal__content">
-        <button className="modal__close" type="button" onClick={onClose}>
-          <img src={closeIcon} alt="close icon" />
+        <button type="button" onClick={onClose} className="modal__close">
+          <img src={closeIcon} alt="Close" />
         </button>
         <h3 className="modal__title">{title}</h3>
-        <form className="modal__form" onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} onChange={handleFormChange} name={name}>
           {children}
-          <button type="submit" className="modal__button">
+          <button type="submit" className="modal__button" disabled={!isFormValid}>
             {buttonText}
           </button>
         </form>

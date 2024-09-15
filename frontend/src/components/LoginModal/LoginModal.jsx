@@ -1,22 +1,34 @@
 import React, { useState } from "react";
-import ModalWithForm from "./ModalWithForm/ModalWithForm";
+import ModalWithForm from "../ModalWithForm/ModalWithForm";
 
-const LoginModal = ({ isOpen, onClose, onLogin }) => {
+const LoginModal = ({ isOpen, onClose, onLogin, onSignupClick }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!email) newErrors.email = "Email is required";
+    if (!password) newErrors.password = "Password is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onLogin({ email, password });
+    if (validateForm()) {
+      onLogin({ email, password });
+    }
   };
 
   return (
     <ModalWithForm
-      title="Log in"
+      title="Log In"
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit}
-      buttonText="Log in"
+      buttonText="Log In"
+      name="login"
     >
       <label className="modal__label">
         Email
@@ -29,6 +41,7 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
           className="modal__input"
           required
         />
+        {errors.email && <span className="modal__error">{errors.email}</span>}
       </label>
       <label className="modal__label">
         Password
@@ -40,8 +53,13 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
           placeholder="Password"
           className="modal__input"
           required
+          autoComplete="current-password"
         />
+        {errors.password && <span className="modal__error">{errors.password}</span>}
       </label>
+      <button type="button" onClick={onSignupClick} className="modal__button modal__button_type_secondary modal__button_no_background">
+        or Sign Up
+      </button>
     </ModalWithForm>
   );
 };

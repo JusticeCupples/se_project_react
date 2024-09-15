@@ -145,6 +145,7 @@ const getCurrentUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, avatar } = req.body;
+  console.log("Updating user with:", { name, avatar });
 
   return User.findByIdAndUpdate(
     req.user._id,
@@ -157,6 +158,7 @@ const updateUser = (req, res) => {
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
+      console.log("Updated user:", user);
       return res.send({ data: user });
     })
     .catch((err) => {

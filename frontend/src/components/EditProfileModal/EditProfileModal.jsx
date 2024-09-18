@@ -15,7 +15,6 @@ const EditProfileModal = ({ isOpen, onClose, onUpdateUser }) => {
 
   const validateAvatarUrl = (url) => {
     if (url.includes('ibb.co')) {
-      // Convert ibb.co link to direct image URL
       const id = url.split('/').pop();
       return `https://i.ibb.co/${id}/${id}.jpg`;
     }

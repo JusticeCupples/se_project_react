@@ -10,7 +10,7 @@ import Profile from "../Profile/Profile";
 import { getForecastWeather, parseWeatherData } from "../../utils/weatherApi";
 import { CurrentTemperatureUnitContext } from "../../contexts/CurrentTemperatureUnitContext";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { getItems, addItem, deleteItem } from "../../utils/api";
+import { getItems, addItem, deleteItem, addCardLike, removeCardLike } from "../../utils/api";
 import { defaultClothingItems } from "../../utils/constants";
 import LoginModal from "../LoginModal/LoginModal";
 import RegisterModal from "../RegisterModal/RegisterModal";
@@ -169,7 +169,7 @@ function App() {
       .then((data) => {
         let itemsToUse = Array.isArray(data) ? data : (data.data || []);
         const normalizedItems = itemsToUse
-          .filter(item => item.imageUrl && item.name) // Filter out invalid items
+          .filter(item => item.imageUrl && item.name)
           .map((item) => ({
             ...item,
             id: item._id || `default_${item.id}`,
@@ -193,6 +193,37 @@ function App() {
     });
     setCurrentDate(date);
   }, []);
+
+  const handleCardLike = ({ id, isLiked }) => {
+    const token = localStorage.getItem("jwt");
+    if (!currentUser || !currentUser.data) {
+      console.error("User not logged in");
+      return;
+    }
+    if (typeof id === 'number' || (typeof id === 'string' && id.startsWith('default_'))) {
+      setCards(cards => cards.map(card => {
+        if (card.id === id || card._id === id) {
+          const updatedLikes = isLiked
+            ? (card.likes || []).filter(likeId => likeId !== currentUser.data._id)
+            : [...(card.likes || []), currentUser.data._id];
+          return { ...card, likes: updatedLikes };
+        }
+        return card;
+      }));
+    } else {
+      const likeMethod = isLiked ? removeCardLike : addCardLike;
+      likeMethod(id, token)
+        .then((updatedCard) => {
+          setCards((prevCards) =>
+            prevCards.map((card) =>
+              card._id === id ? { ...card, likes: updatedCard.data.likes } : card
+            )
+          );
+        })
+        .catch((err) => console.error("Error updating like:", err));
+    }
+  };
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="app">
@@ -217,6 +248,7 @@ function App() {
                   weatherTemp={temp}
                   onSelectCard={handleSelectedCard}
                   clothingItems={cards}
+                  onCardLike={handleCardLike}
                 />
               }
             />
@@ -283,6 +315,7 @@ function App() {
     </CurrentUserContext.Provider>
   );
 }
+
 
 const validateAvatarUrl = (url) => {
   if (url.includes('ibb.co')) {

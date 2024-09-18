@@ -4,7 +4,7 @@ import SideBar from "../Sidebar/Sidebar";
 import "./Profile.css";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
-function Profile({ weatherTemp, onSelectCard, clothingItems, onCreateModal, onEditProfile, onLogout }) {
+function Profile({ weatherTemp, onSelectCard, clothingItems, onCreateModal, onEditProfile, onLogout, onCardLike }) {
   const currentUser = useContext(CurrentUserContext);
 
   return (
@@ -25,6 +25,7 @@ function Profile({ weatherTemp, onSelectCard, clothingItems, onCreateModal, onEd
           filteredCards={clothingItems}
           onSelectCard={onSelectCard}
           onCreateModal={onCreateModal}
+          onCardLike={onCardLike}
         />
       </section>
     </div>

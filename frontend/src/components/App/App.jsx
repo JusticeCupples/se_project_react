@@ -200,9 +200,11 @@ function App() {
       console.error("User not logged in");
       return;
     }
+    console.log("Liking item with ID:", id);
     if (typeof id === 'number' || (typeof id === 'string' && id.startsWith('default_'))) {
+      const numericId = typeof id === 'number' ? id : parseInt(id.split('_')[1]);
       setCards(cards => cards.map(card => {
-        if (card.id === id || card._id === id) {
+        if (card.id === numericId || card._id === numericId || card._id === id) {
           const updatedLikes = isLiked
             ? (card.likes || []).filter(likeId => likeId !== currentUser.data._id)
             : [...(card.likes || []), currentUser.data._id];
@@ -220,8 +222,15 @@ function App() {
             )
           );
         })
-        .catch((err) => console.error("Error updating like:", err));
+        .catch((err) => {
+          console.error("Error updating like:", err);
+          console.log("Failed item ID:", id);
+        });
     }
+  };
+
+  const handleEditProfileModal = () => {
+    setIsEditProfileModalOpen(true);
   };
 
   return (
@@ -259,10 +268,11 @@ function App() {
                   <Profile
                     weatherTemp={temp}
                     onSelectCard={handleSelectedCard}
-                    clothingItems={cards.filter((card) => card.owner === currentUser._id)}
+                    clothingItems={cards}
                     onCreateModal={handleCreateModal}
-                    onEditProfile={() => setIsEditProfileModalOpen(true)}
+                    onEditProfile={handleEditProfileModal}
                     onLogout={handleLogout}
+                    onCardLike={handleCardLike}
                   />
                 ) : (
                   <Navigate to="/" />

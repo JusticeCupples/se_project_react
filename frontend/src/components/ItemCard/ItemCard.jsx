@@ -39,8 +39,12 @@ function ItemCard({ item, onSelectCard, onCardLike }) {
       <div className="item-card__name">{item.name}</div>
       <img src={item.imageUrl} alt={item.name} className="item-card__image" />
       {currentUser?.data && (
-        <button className={`item-card__like-button ${isLiked ? 'item-card__like-button_active' : ''}`} onClick={handleLike}>
-          <img src={isLiked ? filledHeartIcon : heartIcon} alt="like" />
+        <button 
+          className={`item-card__like-button ${isLiked ? 'item-card__like-button_active' : ''}`} 
+          onClick={handleLike}
+        >
+          <img src={heartIcon} alt="like" className="item-card__like-icon" />
+          <img src={filledHeartIcon} alt="liked" className="item-card__like-icon item-card__like-icon_filled" />
         </button>
       )}
     </div>

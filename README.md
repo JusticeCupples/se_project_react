@@ -6,3 +6,13 @@ Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+
+## Repository Structure
+
+This project is split into two repositories:
+
+- Frontend: [se_project_react](https://github.com/JusticeCupples/se_project_react)
+- Backend: [se_project_express](https://github.com/JusticeCupples/se_project_express)
+
+Each part of the project is maintained in its respective repository.

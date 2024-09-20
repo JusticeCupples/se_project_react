@@ -3,9 +3,10 @@ const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
+  const owner = req.user._id;
 
   clothingItem
-    .create({ name, weather, imageUrl })
+    .create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send({ data: item }))
     .catch((err) => {
       console.error("Error in createItem controller:", err);
@@ -21,9 +22,21 @@ const createItem = (req, res) => {
 };
 
 const getItems = (req, res) => {
+  const owner = req.user ? req.user._id : null;
+
+  const query = owner ? { owner } : {};
+
   clothingItem
-    .find({})
-    .then((items) => res.send({ data: items }))
+    .find(query)
+    .then((items) => {
+      if (items.length === 0) {
+        // If no items found, send default items
+        const defaultClothingItems = require('../utils/constants').defaultClothingItems;
+        res.send({ data: defaultClothingItems });
+      } else {
+        res.send({ data: items });
+      }
+    })
     .catch((err) => {
       console.error("Error in getItems controller:", err);
       return res

@@ -45,8 +45,16 @@ function Main({ weatherTemp, onSelectCard, clothingItems, onCardLike }) {
               />
             ))
           ) : (
-            <p>No items available for the current weather.</p>
+            <p>No items available for the current weather. Showing all items:</p>
           )}
+          {filteredCards.length === 0 && clothingItems.map((item) => (
+            <ItemCard
+              key={item._id || item.id || item.name}
+              item={item}
+              onSelectCard={onSelectCard}
+              onCardLike={onCardLike}
+            />
+          ))}
         </div>
       </section>
     </main>

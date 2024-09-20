@@ -12,18 +12,14 @@ function ClothesSection({ filteredCards = [], onSelectCard, onCreateModal, onCar
         </button>
       </div>
       <div className="clothes-section__items">
-        {filteredCards.length > 0 ? (
-          filteredCards.map((item) => (
-            <ItemCard 
-              key={item._id || item.id || `item_${item.name}`} 
-              item={item} 
-              onSelectCard={onSelectCard}
-              onCardLike={onCardLike}
-            />
-          ))
-        ) : (
-          <p>No items available for the current weather.</p>
-        )}
+        {filteredCards.map((item) => (
+          <ItemCard 
+            key={item._id || item.id || `item_${item.name}`} 
+            item={item} 
+            onSelectCard={onSelectCard}
+            onCardLike={onCardLike}
+          />
+        ))}
       </div>
     </div>
   );

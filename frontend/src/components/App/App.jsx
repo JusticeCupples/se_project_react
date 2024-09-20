@@ -165,26 +165,38 @@ function App() {
   }, []);
 
   useEffect(() => {
-    getItems()
-      .then((data) => {
-        let itemsToUse = Array.isArray(data) ? data : (data.data || []);
-        const normalizedItems = itemsToUse
-          .filter(item => item.imageUrl && item.name)
-          .map((item) => ({
-            ...item,
-            id: item._id || `default_${item.id}`,
-          }));
-        const uniqueItems = [
-          ...normalizedItems,
-          ...defaultClothingItems.filter(item => !normalizedItems.some(ni => ni.name === item.name))
-        ];
-        setCards(uniqueItems);
-      })
-      .catch((err) => {
-        console.error("Error fetching items:", err);
-        setCards(defaultClothingItems);
-      });
-  }, []);
+    if (isLoggedIn) {
+      getItems()
+        .then((data) => {
+          console.log("Data received in App.jsx:", data);
+          let itemsToUse = Array.isArray(data.data) ? data.data : [];
+          const storedDefaultLikes = JSON.parse(localStorage.getItem('defaultCardLikes') || '{}');
+          const normalizedItems = [...itemsToUse, ...defaultClothingItems]
+            .filter(item => item.imageUrl && item.name)
+            .map((item) => ({
+              ...item,
+              id: item._id || `default_${item._id}`,
+              likes: (typeof item._id === 'number' || (typeof item._id === 'string' && item._id.startsWith('default_')))
+                ? storedDefaultLikes[item._id] || []
+                : item.likes
+            }));
+          console.log("Normalized items:", normalizedItems);
+          setCards(normalizedItems);
+        })
+        .catch((err) => {
+          console.error("Error fetching items:", err);
+          setCards(defaultClothingItems);
+        });
+    } else {
+      console.log("User not logged in, setting default items");
+      const storedDefaultLikes = JSON.parse(localStorage.getItem('defaultCardLikes') || '{}');
+      const defaultItemsWithLikes = defaultClothingItems.map(item => ({
+        ...item,
+        likes: storedDefaultLikes[item._id] || []
+      }));
+      setCards(defaultItemsWithLikes);
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const date = new Date().toLocaleDateString("en-US", {
@@ -203,15 +215,23 @@ function App() {
     console.log("Liking item with ID:", id);
     if (typeof id === 'number' || (typeof id === 'string' && id.startsWith('default_'))) {
       const numericId = typeof id === 'number' ? id : parseInt(id.split('_')[1]);
-      setCards(cards => cards.map(card => {
-        if (card.id === numericId || card._id === numericId || card._id === id) {
-          const updatedLikes = isLiked
-            ? (card.likes || []).filter(likeId => likeId !== currentUser.data._id)
-            : [...(card.likes || []), currentUser.data._id];
-          return { ...card, likes: updatedLikes };
-        }
-        return card;
-      }));
+      setCards(cards => {
+        const updatedCards = cards.map(card => {
+          if (card.id === numericId || card._id === numericId || card._id === id) {
+            const updatedLikes = isLiked
+              ? (card.likes || []).filter(likeId => likeId !== currentUser.data._id)
+              : [...(card.likes || []), currentUser.data._id];
+            return { ...card, likes: updatedLikes };
+          }
+          return card;
+        });
+        // Store updated likes for default cards in local storage
+        const defaultCardLikes = updatedCards
+          .filter(card => typeof card._id === 'number' || (typeof card._id === 'string' && card._id.startsWith('default_')))
+          .reduce((acc, card) => ({ ...acc, [card._id]: card.likes }), {});
+        localStorage.setItem('defaultCardLikes', JSON.stringify(defaultCardLikes));
+        return updatedCards;
+      });
     } else {
       const likeMethod = isLiked ? removeCardLike : addCardLike;
       likeMethod(id, token)

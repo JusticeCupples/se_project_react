@@ -20,56 +20,65 @@ const request = (url, options) => {
     });
 };
 
-function getItems() {
-  console.log('Fetching items from:', `${baseUrl}/items`);
-  return request(`${baseUrl}/items`)
-    .then(data => {
-      console.log('Received data:', data);
-      return data.data && data.data.length > 0 ? data : { data: defaultClothingItems };
+export const getItems = () => {
+  const token = localStorage.getItem("jwt");
+  return fetch(`${baseUrl}/items`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => checkResponse(res))
+    .then((data) => {
+      console.log("Items fetched from server:", data.data);
+      return { data: Array.isArray(data.data) ? data.data : [] };
     })
-    .catch(err => {
-      console.error("Error in getItems:", err);
-      return { data: defaultClothingItems };
+    .catch((err) => {
+      console.error("Error fetching items:", err);
+      return { data: [] };
     });
-}
+};
 
-function addItem(item) {
+export const addItem = (item) => {
   return request(`${baseUrl}/items`, {
     method: "POST",
     headers: {
       'Content-Type': 'application/json',
+      authorization: `Bearer ${localStorage.getItem("jwt")}`,
     },
     body: JSON.stringify(item),
   }).catch(err => {
     console.error("Error adding item:", err);
     throw err;
   });
-}
+};
 
-function deleteItem(itemId) {
+export const deleteItem = (itemId) => {
   return request(`${baseUrl}/items/${itemId}`, {
     method: "DELETE",
+    headers: {
+      authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    },
   });
-}
+};
 
-export function addCardLike(itemId, token) {
+export const addCardLike = (itemId) => {
   return request(`${baseUrl}/items/${itemId}/likes`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      authorization: `Bearer ${token}`,
+      authorization: `Bearer ${localStorage.getItem("jwt")}`,
     },
   });
-}
+};
 
-export function removeCardLike(itemId, token) {
+export const removeCardLike = (itemId) => {
   return request(`${baseUrl}/items/${itemId}/likes`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      authorization: `Bearer ${token}`,
+      authorization: `Bearer ${localStorage.getItem("jwt")}`,
     },
   });
-}
-
-export { getItems, addItem, deleteItem };
+};

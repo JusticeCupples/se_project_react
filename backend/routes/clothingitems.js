@@ -9,12 +9,11 @@ const {
   dislikeItem,
 } = require("../controllers/clothingitems");
 
+router.use(auth);
+
 router.get("/", getItems);
 router.post("/", createItem);
 router.delete("/:itemId", deleteItem);
-
-router.use(auth);
-
 router.put("/:itemId/likes", likeItem);
 router.delete("/:itemId/likes", dislikeItem);
 

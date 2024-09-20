@@ -49,7 +49,6 @@
 .modal__form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .modal__input {
@@ -60,10 +59,13 @@
   border-bottom: 1px solid black;
   width: 100%;
   box-sizing: border-box;
+  margin-bottom: 24px;
 }
 
 .modal__label {
-  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .modal__radio-buttons {

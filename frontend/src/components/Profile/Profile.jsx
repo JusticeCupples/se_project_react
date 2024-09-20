@@ -10,15 +10,11 @@ function Profile({ weatherTemp, onSelectCard, clothingItems, onCreateModal, onEd
   return (
     <div>
       <section className="profile__sidebar">
-        <SideBar weatherTemp={weatherTemp} />
-        <div className="profile__buttons">
-          <button className="profile__button profile__button_no_background" onClick={onEditProfile}>
-            Change profile data
-          </button>
-          <button className="profile__button profile__button_no_background" onClick={onLogout}>
-            Log out
-          </button>
-        </div>
+        <SideBar 
+          weatherTemp={weatherTemp} 
+          onEditProfile={onEditProfile}
+          onLogout={onLogout}
+        />
       </section>
       <section className="profile__clothes-section">
         <ClothesSection

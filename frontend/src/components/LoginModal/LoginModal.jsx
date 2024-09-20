@@ -4,25 +4,24 @@ import ModalWithForm from "../ModalWithForm/ModalWithForm";
 const LoginModal = ({ isOpen, onClose, onLogin, onSignupClick }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const [error, setError] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     setIsFormValid(email && password);
   }, [email, password]);
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!email) newErrors.email = "Email is required";
-    if (!password) newErrors.password = "Password is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      onLogin({ email, password });
+    setError(""); // Clear any previous errors
+    if (!email.includes('@') || password.length < 6) {
+      setError("Invalid email or password");
+      return;
+    }
+    try {
+      await onLogin({ email, password });
+    } catch (err) {
+      setError("Incorrect email or password");
     }
   };
 
@@ -32,10 +31,10 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSignupClick }) => {
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit}
-      buttonText="Log In"
       name="login"
-      isValid={isFormValid}
+      hideDefaultButton={true}
     >
+      {error && <span className="modal__error">{error}</span>}
       <label className="modal__label">
         Email
         <input
@@ -47,7 +46,6 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSignupClick }) => {
           className="modal__input"
           required
         />
-        {errors.email && <span className="modal__error">{errors.email}</span>}
       </label>
       <label className="modal__label">
         Password
@@ -61,11 +59,15 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSignupClick }) => {
           required
           autoComplete="current-password"
         />
-        {errors.password && <span className="modal__error">{errors.password}</span>}
       </label>
-      <button type="button" onClick={onSignupClick} className="modal__button modal__button_type_secondary modal__button_no_background">
-        or Sign Up
-      </button>
+      <div className="modal__button-container">
+        <button type="submit" className={`modal__button ${isFormValid ? 'modal__button_valid' : ''}`}>
+          Log In
+        </button>
+        <button type="button" onClick={onSignupClick} className="modal__button modal__button_type_secondary">
+          or Sign Up
+        </button>
+      </div>
     </ModalWithForm>
   );
 };

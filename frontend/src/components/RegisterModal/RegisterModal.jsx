@@ -23,9 +23,8 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onLoginClick }) => {
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit}
-      buttonText="Sign Up"
       name="register"
-      isValid={isFormValid}
+      hideDefaultButton={true}
     >
       <label className="modal__label">
         Email *
@@ -76,9 +75,14 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onLoginClick }) => {
           required
         />
       </label>
-      <button type="button" onClick={onLoginClick} className="modal__button modal__button_type_secondary">
-        or Log In
-      </button>
+      <div className="modal__button-container">
+        <button type="submit" className={`modal__button ${isFormValid ? 'modal__button_valid' : ''}`}>
+          Sign Up
+        </button>
+        <button type="button" onClick={onLoginClick} className="modal__button modal__button_type_secondary">
+          or Log In
+        </button>
+      </div>
     </ModalWithForm>
   );
 };

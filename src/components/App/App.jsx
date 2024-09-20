@@ -225,7 +225,6 @@ function App() {
           }
           return card;
         });
-        // Store updated likes for default cards in local storage
         const defaultCardLikes = updatedCards
           .filter(card => typeof card._id === 'number' || (typeof card._id === 'string' && card._id.startsWith('default_')))
           .reduce((acc, card) => ({ ...acc, [card._id]: card.likes }), {});

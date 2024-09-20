@@ -107,6 +107,11 @@
   margin-top: 16px;
   width: 124px;
   height: 36px;
+  transition: background-color 0.3s ease;
+}
+
+.modal__button_valid {
+  background-color: #000000;
 }
 
 .modal__button:disabled {

@@ -5,6 +5,7 @@ const AddItemModal = ({ handleCloseModal, onAddItem, isOpen }) => {
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [weather, setWeather] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -31,6 +32,10 @@ const AddItemModal = ({ handleCloseModal, onAddItem, isOpen }) => {
     onAddItem(newItem);
   };
 
+  useEffect(() => {
+    setIsFormValid(name && imageUrl && weather);
+  }, [name, imageUrl, weather]);
+
   return (
     <ModalWithForm
       title="New Garment"
@@ -38,6 +43,7 @@ const AddItemModal = ({ handleCloseModal, onAddItem, isOpen }) => {
       isOpen={isOpen}
       onSubmit={handleSubmit}
       buttonText="Add garment"
+      isValid={isFormValid}
     >
       <label className="modal__label">
         Name

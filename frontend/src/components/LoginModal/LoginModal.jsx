@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ModalWithForm from "../ModalWithForm/ModalWithForm";
 
 const LoginModal = ({ isOpen, onClose, onLogin, onSignupClick }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    setIsFormValid(email && password);
+  }, [email, password]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -29,6 +34,7 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSignupClick }) => {
       onSubmit={handleSubmit}
       buttonText="Log In"
       name="login"
+      isValid={isFormValid}
     >
       <label className="modal__label">
         Email

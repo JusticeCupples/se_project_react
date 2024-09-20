@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ModalWithForm from "../ModalWithForm/ModalWithForm";
 
 const RegisterModal = ({ isOpen, onClose, onRegister, onLoginClick }) => {
@@ -6,6 +6,11 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onLoginClick }) => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    setIsFormValid(email && password && name && avatar);
+  }, [email, password, name, avatar]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,6 +25,7 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onLoginClick }) => {
       onSubmit={handleSubmit}
       buttonText="Sign Up"
       name="register"
+      isValid={isFormValid}
     >
       <label className="modal__label">
         Email *

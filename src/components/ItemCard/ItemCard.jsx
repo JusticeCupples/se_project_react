@@ -15,15 +15,10 @@ function ItemCard({ item, onSelectCard, onCardLike }) {
   const isLiked = item.likes && Array.isArray(item.likes) && currentUser?.data?._id && 
     (item.likes.includes(currentUser.data._id) || item.likes.some(like => like._id === currentUser.data._id));
 
-  useEffect(() => {
-    console.log('ItemCard useEffect:', { itemId: item._id || item.id, isLiked, likes: item.likes, currentUser: currentUser?.data?._id });
-  }, [item, isLiked, currentUser]);
-
   const handleLike = (e) => {
     e.stopPropagation();
     if (typeof onCardLike === 'function') {
       const itemId = item._id || item.id || (typeof item._id === 'number' ? `default_${item._id}` : undefined);
-      console.log("Handling like for item:", itemId, "Item data:", item);
       if (itemId !== undefined) {
         onCardLike({ id: itemId, isLiked });
       } else {

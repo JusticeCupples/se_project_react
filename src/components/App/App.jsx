@@ -308,7 +308,7 @@ function App() {
               isOpen={activeModal === "create"}
             />
           )}
-          {activeModal === "preview" && (
+          {activeModal === "preview" && selectedCard && (
             <ItemModal
               activeModal={activeModal}
               onClose={handleCloseModal}

@@ -4,9 +4,16 @@ import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 const EditProfileModal = ({ isOpen, onClose, onUpdateUser }) => {
   const currentUser = useContext(CurrentUserContext);
-  const [name, setName] = useState(currentUser?.data?.name || '');
-  const [avatar, setAvatar] = useState(currentUser?.data?.avatar || '');
+  const [name, setName] = useState('');
+  const [avatar, setAvatar] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    if (currentUser?.data) {
+      setName(currentUser.data.name || '');
+      setAvatar(currentUser.data.avatar || '');
+    }
+  }, [currentUser, isOpen]);
 
   useEffect(() => {
     setIsFormValid(name && avatar);
@@ -42,7 +49,6 @@ const EditProfileModal = ({ isOpen, onClose, onUpdateUser }) => {
           name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder={currentUser?.data?.name || 'Name'}
           className="modal__input"
           required
         />
@@ -54,7 +60,6 @@ const EditProfileModal = ({ isOpen, onClose, onUpdateUser }) => {
           name="avatar"
           value={avatar}
           onChange={(e) => setAvatar(e.target.value)}
-          placeholder={currentUser?.data?.avatar || 'Avatar URL'}
           className="modal__input"
           required
         />

@@ -1,5 +1,8 @@
 const baseUrl = "http://localhost:3001";
-import { defaultClothingItems } from './constants';
+
+const getToken = () => {
+  return localStorage.getItem("jwt");
+};
 
 const checkResponse = (res) => {
   if (res.ok) {
@@ -10,7 +13,14 @@ const checkResponse = (res) => {
 
 const request = (url, options) => {
   return fetch(url, options)
-    .then(checkResponse)
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return res.text().then(text => {
+        throw new Error(`${res.status} ${res.statusText}: ${text}`);
+      });
+    })
     .catch(err => {
       if (err instanceof TypeError && err.message === "Failed to fetch") {
         console.error(`Network error: Unable to connect to ${url}`);
@@ -67,9 +77,12 @@ export const addCardLike = (itemId) => {
   return request(`${baseUrl}/items/${itemId}/likes`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
-      authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      'Content-Type': 'application/json',
+      authorization: `Bearer ${getToken()}`,
     },
+  }).catch(err => {
+    console.error("Error in addCardLike:", err);
+    throw err.response ? err.response.data : err;
   });
 };
 
@@ -77,8 +90,15 @@ export const removeCardLike = (itemId) => {
   return request(`${baseUrl}/items/${itemId}/likes`, {
     method: "DELETE",
     headers: {
-      "Content-Type": "application/json",
-      authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      authorization: `Bearer ${getToken()}`,
     },
+  }).catch(err => {
+    console.error("Error in removeCardLike:", err);
+    throw err.response ? err.response.data : err;
   });
+};
+
+const getCurrentUserId = () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  return currentUser ? currentUser._id : null;
 };

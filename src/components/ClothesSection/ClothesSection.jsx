@@ -14,7 +14,7 @@ function ClothesSection({ filteredCards = [], onSelectCard, onCreateModal, onCar
       <div className="clothes-section__items">
         {filteredCards.map((item) => (
           <ItemCard 
-            key={item._id || item.id || `item_${item.name}`} 
+            key={item._id} 
             item={item} 
             onSelectCard={onSelectCard}
             onCardLike={onCardLike}

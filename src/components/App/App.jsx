@@ -11,12 +11,12 @@ import { getForecastWeather, parseWeatherData } from "../../utils/weatherApi";
 import { CurrentTemperatureUnitContext } from "../../contexts/CurrentTemperatureUnitContext";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { getItems, addItem, deleteItem, addCardLike, removeCardLike } from "../../utils/api";
-import { defaultClothingItems } from "../../utils/constants";
 import LoginModal from "../LoginModal/LoginModal";
 import RegisterModal from "../RegisterModal/RegisterModal";
 import EditProfileModal from "../EditProfileModal/EditProfileModal";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 import { register, login, checkToken, updateProfile } from "../../utils/auth";
+import ProtectedRoute from "../../ProtectedRoute/ProtectedRoute";
 
 function App() {
   const [activeModal, setActiveModal] = useState("");
@@ -27,17 +27,13 @@ function App() {
   const [currentDate, setCurrentDate] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
-  const handleCreateModal = () => {
-    setActiveModal("create");
-  };
+  const handleCreateModal = () => setActiveModal("create");
+  const handleLoginModal = () => setActiveModal("login");
+  const handleRegisterModal = () => setActiveModal("register");
+  const handleEditProfileModal = () => setActiveModal("edit-profile");
 
-  const handleCloseModal = () => {
-    setActiveModal("");
-  };
+  const handleCloseModal = () => setActiveModal("");
 
   const handleSelectedCard = (card) => {
     setActiveModal("preview");
@@ -88,7 +84,7 @@ function App() {
         if (data.token) {
           localStorage.setItem("jwt", data.token);
           checkTokenValidity();
-          setIsLoginModalOpen(false);
+          setActiveModal("");
         }
       })
       .catch((err) => console.error(err));
@@ -98,7 +94,7 @@ function App() {
     register({ email, password, name, avatar })
       .then(() => {
         handleLogin({ email, password });
-        setIsRegisterModalOpen(false);
+        setActiveModal("");
       })
       .catch((err) => console.error(err));
   };
@@ -110,7 +106,7 @@ function App() {
       .then((updatedUser) => {
         console.log("Updated user data:", updatedUser);
         setCurrentUser({ data: updatedUser.data });
-        setIsEditProfileModalOpen(false);
+        setActiveModal("");
       })
       .catch((err) => {
         console.error("Error updating user:", err);
@@ -170,31 +166,14 @@ function App() {
         .then((data) => {
           console.log("Data received in App.jsx:", data);
           let itemsToUse = Array.isArray(data.data) ? data.data : [];
-          const storedDefaultLikes = JSON.parse(localStorage.getItem('defaultCardLikes') || '{}');
-          const normalizedItems = [...itemsToUse, ...defaultClothingItems]
-            .filter(item => item.imageUrl && item.name)
-            .map((item) => ({
-              ...item,
-              id: item._id || `default_${item._id}`,
-              likes: (typeof item._id === 'number' || (typeof item._id === 'string' && item._id.startsWith('default_')))
-                ? storedDefaultLikes[item._id] || []
-                : item.likes
-            }));
-          console.log("Normalized items:", normalizedItems);
-          setCards(normalizedItems);
+          setCards(itemsToUse);
         })
         .catch((err) => {
           console.error("Error fetching items:", err);
-          setCards(defaultClothingItems);
+          setCards([]);
         });
     } else {
-      console.log("User not logged in, setting default items");
-      const storedDefaultLikes = JSON.parse(localStorage.getItem('defaultCardLikes') || '{}');
-      const defaultItemsWithLikes = defaultClothingItems.map(item => ({
-        ...item,
-        likes: storedDefaultLikes[item._id] || []
-      }));
-      setCards(defaultItemsWithLikes);
+      setCards([]);
     }
   }, [isLoggedIn]);
 
@@ -207,49 +186,46 @@ function App() {
   }, []);
 
   const handleCardLike = ({ id, isLiked }) => {
-    const token = localStorage.getItem("jwt");
     if (!currentUser || !currentUser.data) {
       console.error("User not logged in");
       return;
     }
-    console.log("Liking item with ID:", id);
-    if (typeof id === 'number' || (typeof id === 'string' && id.startsWith('default_'))) {
-      const numericId = typeof id === 'number' ? id : parseInt(id.split('_')[1]);
-      setCards(cards => {
-        const updatedCards = cards.map(card => {
-          if (card.id === numericId || card._id === numericId || card._id === id) {
-            const updatedLikes = isLiked
-              ? (card.likes || []).filter(likeId => likeId !== currentUser.data._id)
-              : [...(card.likes || []), currentUser.data._id];
-            return { ...card, likes: updatedLikes };
-          }
-          return card;
-        });
-        const defaultCardLikes = updatedCards
-          .filter(card => typeof card._id === 'number' || (typeof card._id === 'string' && card._id.startsWith('default_')))
-          .reduce((acc, card) => ({ ...acc, [card._id]: card.likes }), {});
-        localStorage.setItem('defaultCardLikes', JSON.stringify(defaultCardLikes));
-        return updatedCards;
-      });
-    } else {
-      const likeMethod = isLiked ? removeCardLike : addCardLike;
-      likeMethod(id, token)
-        .then((updatedCard) => {
-          setCards((prevCards) =>
-            prevCards.map((card) =>
-              card._id === id ? { ...card, likes: updatedCard.data.likes } : card
-            )
-          );
-        })
-        .catch((err) => {
-          console.error("Error updating like:", err);
-          console.log("Failed item ID:", id);
-        });
-    }
-  };
 
-  const handleEditProfileModal = () => {
-    setIsEditProfileModalOpen(true);
+    const userId = currentUser.data._id;
+
+    setCards((prevCards) =>
+      prevCards.map((card) => {
+        if (card._id === id) {
+          const updatedLikes = isLiked
+            ? (card.likes || []).filter((likeId) => likeId !== userId)
+            : [...(card.likes || []), userId];
+          return { ...card, likes: updatedLikes };
+        }
+        return card;
+      })
+    );
+
+    const likeMethod = isLiked ? removeCardLike : addCardLike;
+    likeMethod(id)
+      .then((updatedCard) => {
+        setCards((prevCards) =>
+          prevCards.map((card) => (card._id === id ? updatedCard.data : card))
+        );
+      })
+      .catch((err) => {
+        console.error("Error updating like on server:", err);
+        setCards((prevCards) =>
+          prevCards.map((card) => {
+            if (card._id === id) {
+              const revertedLikes = isLiked
+                ? [...(card.likes || []), userId]
+                : (card.likes || []).filter((likeId) => likeId !== userId);
+              return { ...card, likes: revertedLikes };
+            }
+            return card;
+          })
+        );
+      });
   };
 
   return (
@@ -264,8 +240,8 @@ function App() {
             city={temp.city}
             currentDate={currentDate}
             isLoggedIn={isLoggedIn}
-            onLoginClick={() => setIsLoginModalOpen(true)}
-            onRegisterClick={() => setIsRegisterModalOpen(true)}
+            onLoginClick={handleLoginModal}
+            onRegisterClick={handleRegisterModal}
           />
 
           <Routes>
@@ -283,7 +259,7 @@ function App() {
             <Route
               path="/profile"
               element={
-                isLoggedIn ? (
+                <ProtectedRoute isLoggedIn={isLoggedIn}>
                   <Profile
                     weatherTemp={temp}
                     onSelectCard={handleSelectedCard}
@@ -293,9 +269,7 @@ function App() {
                     onLogout={handleLogout}
                     onCardLike={handleCardLike}
                   />
-                ) : (
-                  <Navigate to="/" />
-                )
+                </ProtectedRoute>
               }
             />
           </Routes>
@@ -317,26 +291,20 @@ function App() {
             />
           )}
           <LoginModal
-            isOpen={isLoginModalOpen}
-            onClose={() => setIsLoginModalOpen(false)}
+            isOpen={activeModal === "login"}
+            onClose={handleCloseModal}
             onLogin={handleLogin}
-            onSignupClick={() => {
-              setIsLoginModalOpen(false);
-              setIsRegisterModalOpen(true);
-            }}
+            onSignupClick={handleRegisterModal}
           />
           <RegisterModal
-            isOpen={isRegisterModalOpen}
-            onClose={() => setIsRegisterModalOpen(false)}
+            isOpen={activeModal === "register"}
+            onClose={handleCloseModal}
             onRegister={handleRegister}
-            onLoginClick={() => {
-              setIsRegisterModalOpen(false);
-              setIsLoginModalOpen(true);
-            }}
+            onLoginClick={handleLoginModal}
           />
           <EditProfileModal
-            isOpen={isEditProfileModalOpen}
-            onClose={() => setIsEditProfileModalOpen(false)}
+            isOpen={activeModal === "edit-profile"}
+            onClose={handleCloseModal}
             onUpdateUser={handleUpdateUser}
           />
         </CurrentTemperatureUnitContext.Provider>

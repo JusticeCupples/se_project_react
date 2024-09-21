@@ -2,10 +2,12 @@ import React, { useMemo, useContext } from "react";
 import WeatherCard from "../WeatherCard/WeatherCard";
 import ItemCard from "../ItemCard/ItemCard";
 import { CurrentTemperatureUnitContext } from "../../contexts/CurrentTemperatureUnitContext";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 import "./Main.css";
 
 function Main({ weatherTemp, onSelectCard, clothingItems, onCardLike }) {
   const { currentTemperatureUnit } = useContext(CurrentTemperatureUnitContext);
+  const currentUser = useContext(CurrentUserContext);
 
   const temp = weatherTemp?.temperature?.[currentTemperatureUnit] || "N/A";
   const fahrenheitTemp = weatherTemp?.temperature?.F || 0;
@@ -35,21 +37,9 @@ function Main({ weatherTemp, onSelectCard, clothingItems, onCardLike }) {
           Today is {temp}&deg; {currentTemperatureUnit} / You may want to wear:
         </p>
         <div className="card__items">
-          {filteredCards.length > 0 ? (
-            filteredCards.map((item) => (
-              <ItemCard
-                key={item._id || item.id || item.name}
-                item={item}
-                onSelectCard={onSelectCard}
-                onCardLike={onCardLike}
-              />
-            ))
-          ) : (
-            <p>No items available for the current weather. Showing all items:</p>
-          )}
-          {filteredCards.length === 0 && clothingItems.map((item) => (
+          {filteredCards.map((item) => (
             <ItemCard
-              key={item._id || item.id || item.name}
+              key={item._id || item.id}
               item={item}
               onSelectCard={onSelectCard}
               onCardLike={onCardLike}

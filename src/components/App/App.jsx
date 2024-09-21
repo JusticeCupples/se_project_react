@@ -16,7 +16,8 @@ import RegisterModal from "../RegisterModal/RegisterModal";
 import EditProfileModal from "../EditProfileModal/EditProfileModal";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 import { register, login, checkToken, updateProfile } from "../../utils/auth";
-import ProtectedRoute from "../../ProtectedRoute/ProtectedRoute";
+import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
+import { defaultClothingItems } from "../../utils/constants";
 
 function App() {
   const [activeModal, setActiveModal] = useState("");
@@ -74,6 +75,7 @@ function App() {
         alert("Failed to delete item. Please try again.");
       });
   };
+
   const handleAddItemSubmit = (newItem) => {
     onAddItem(newItem);
   };
@@ -84,7 +86,7 @@ function App() {
         if (data.token) {
           localStorage.setItem("jwt", data.token);
           checkTokenValidity();
-          setActiveModal("");
+          handleCloseModal();
         }
       })
       .catch((err) => console.error(err));
@@ -94,7 +96,7 @@ function App() {
     register({ email, password, name, avatar })
       .then(() => {
         handleLogin({ email, password });
-        setActiveModal("");
+        handleCloseModal();
       })
       .catch((err) => console.error(err));
   };
@@ -106,7 +108,7 @@ function App() {
       .then((updatedUser) => {
         console.log("Updated user data:", updatedUser);
         setCurrentUser({ data: updatedUser.data });
-        setActiveModal("");
+        handleCloseModal();
       })
       .catch((err) => {
         console.error("Error updating user:", err);
@@ -157,7 +159,7 @@ function App() {
         const temperature = parseWeatherData(data);
         setTemp({ ...temperature, city: data.name });
       })
-      .catch((err) => console.error("Error fetching weather:", err));
+      .catch((err) => console.error(err));
   }, []);
 
   useEffect(() => {
@@ -173,7 +175,7 @@ function App() {
           setCards([]);
         });
     } else {
-      setCards([]);
+      setCards(defaultClothingItems);
     }
   }, [isLoggedIn]);
 
@@ -193,18 +195,6 @@ function App() {
 
     const userId = currentUser.data._id;
 
-    setCards((prevCards) =>
-      prevCards.map((card) => {
-        if (card._id === id) {
-          const updatedLikes = isLiked
-            ? (card.likes || []).filter((likeId) => likeId !== userId)
-            : [...(card.likes || []), userId];
-          return { ...card, likes: updatedLikes };
-        }
-        return card;
-      })
-    );
-
     const likeMethod = isLiked ? removeCardLike : addCardLike;
     likeMethod(id)
       .then((updatedCard) => {
@@ -214,17 +204,6 @@ function App() {
       })
       .catch((err) => {
         console.error("Error updating like on server:", err);
-        setCards((prevCards) =>
-          prevCards.map((card) => {
-            if (card._id === id) {
-              const revertedLikes = isLiked
-                ? [...(card.likes || []), userId]
-                : (card.likes || []).filter((likeId) => likeId !== userId);
-              return { ...card, likes: revertedLikes };
-            }
-            return card;
-          })
-        );
       });
   };
 
@@ -312,7 +291,6 @@ function App() {
     </CurrentUserContext.Provider>
   );
 }
-
 
 const validateAvatarUrl = (url) => {
   if (url.includes('ibb.co')) {

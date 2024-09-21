@@ -1,3 +1,5 @@
+import { checkResponse } from "./api";
+
 const BASE_URL = "http://localhost:3001";
 
 export const register = ({ name, avatar, email, password }) => {
@@ -49,11 +51,4 @@ export const updateProfile = ({ name, avatar }) => {
       console.error("Error updating profile:", error);
       throw error;
     });
-};
-
-const checkResponse = (res) => {
-  if (res.ok) {
-    return res.json();
-  }
-  return Promise.reject(`Error: ${res.status}`);
 };

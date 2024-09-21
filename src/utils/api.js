@@ -4,7 +4,7 @@ const getToken = () => {
   return localStorage.getItem("jwt");
 };
 
-const checkResponse = (res) => {
+export const checkResponse = (res) => {
   if (res.ok) {
     return res.json();
   }
@@ -51,54 +51,43 @@ export const getItems = () => {
 };
 
 export const addItem = (item) => {
+  const token = getToken();
   return request(`${baseUrl}/items`, {
     method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(item),
-  }).catch(err => {
-    console.error("Error adding item:", err);
-    throw err;
   });
 };
 
-export const deleteItem = (itemId) => {
-  return request(`${baseUrl}/items/${itemId}`, {
+export const deleteItem = (id) => {
+  const token = getToken();
+  return request(`${baseUrl}/items/${id}`, {
     method: "DELETE",
     headers: {
-      authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      authorization: `Bearer ${token}`,
     },
   });
 };
 
-export const addCardLike = (itemId) => {
-  return request(`${baseUrl}/items/${itemId}/likes`, {
+export const addCardLike = (id) => {
+  const token = getToken();
+  return request(`${baseUrl}/items/${id}/likes`, {
     method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
-      authorization: `Bearer ${getToken()}`,
+      authorization: `Bearer ${token}`,
     },
-  }).catch(err => {
-    console.error("Error in addCardLike:", err);
-    throw err.response ? err.response.data : err;
   });
 };
 
-export const removeCardLike = (itemId) => {
-  return request(`${baseUrl}/items/${itemId}/likes`, {
+export const removeCardLike = (id) => {
+  const token = getToken();
+  return request(`${baseUrl}/items/${id}/likes`, {
     method: "DELETE",
     headers: {
-      authorization: `Bearer ${getToken()}`,
+      authorization: `Bearer ${token}`,
     },
-  }).catch(err => {
-    console.error("Error in removeCardLike:", err);
-    throw err.response ? err.response.data : err;
   });
-};
-
-const getCurrentUserId = () => {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  return currentUser ? currentUser._id : null;
 };

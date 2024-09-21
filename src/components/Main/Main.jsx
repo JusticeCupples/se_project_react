@@ -37,9 +37,9 @@ function Main({ weatherTemp, onSelectCard, clothingItems, onCardLike }) {
           Today is {temp}&deg; {currentTemperatureUnit} / You may want to wear:
         </p>
         <div className="card__items">
-          {filteredCards.map((item) => (
+          {filteredCards.map((item, index) => (
             <ItemCard
-              key={item._id || item.id}
+              key={`${item._id || item.id || index}`}
               item={item}
               onSelectCard={onSelectCard}
               onCardLike={onCardLike}

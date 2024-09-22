@@ -28,8 +28,13 @@ const AddItemModal = ({ handleCloseModal, onAddItem, isOpen }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!name || !imageUrl || !weather) {
+      alert("Please fill in all fields");
+      return;
+    }
     const newItem = { name, imageUrl, weather };
     onAddItem(newItem);
+    handleCloseModal();
   };
 
   useEffect(() => {

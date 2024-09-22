@@ -14,6 +14,10 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onLoginClick }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (password.length < 6) {
+      alert("Password must contain at least 6 characters");
+      return;
+    }
     onRegister({ email, password, name, avatar });
   };
 

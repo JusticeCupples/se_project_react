@@ -31,19 +31,13 @@ const request = (url, options) => {
 };
 
 export const getItems = () => {
-  const token = localStorage.getItem("jwt");
   return fetch(`${baseUrl}/items`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      authorization: `Bearer ${token}`,
     },
   })
-    .then((res) => checkResponse(res))
-    .then((data) => {
-      console.log("Items fetched from server:", data.data);
-      return { data: Array.isArray(data.data) ? data.data : [] };
-    })
+    .then(checkResponse)
     .catch((err) => {
       console.error("Error fetching items:", err);
       return { data: [] };
@@ -52,6 +46,7 @@ export const getItems = () => {
 
 export const addItem = (item) => {
   const token = getToken();
+  console.log("Token used for addItem:", token);
   return request(`${baseUrl}/items`, {
     method: "POST",
     headers: {
@@ -90,4 +85,29 @@ export const removeCardLike = (id) => {
       authorization: `Bearer ${token}`,
     },
   });
+};
+
+export const getUserItems = () => {
+  const token = localStorage.getItem("jwt");
+  return fetch(`${baseUrl}/items/user`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  })
+    .then(checkResponse)
+    .catch((err) => {
+      console.error("Error fetching user items:", err);
+      return { data: [] };
+    });
+};
+
+export const getAllItems = () => {
+  return fetch(`${baseUrl}/items`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then(checkResponse);
 };

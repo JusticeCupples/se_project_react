@@ -10,18 +10,18 @@ import Profile from "../Profile/Profile";
 import { getForecastWeather, parseWeatherData } from "../../utils/weatherApi";
 import { CurrentTemperatureUnitContext } from "../../contexts/CurrentTemperatureUnitContext";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { getItems, addItem, deleteItem, addCardLike, removeCardLike } from "../../utils/api";
+import { getItems, getAllItems, addItem, deleteItem, addCardLike, removeCardLike } from "../../utils/api";
 import LoginModal from "../LoginModal/LoginModal";
 import RegisterModal from "../RegisterModal/RegisterModal";
 import EditProfileModal from "../EditProfileModal/EditProfileModal";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 import { register, login, checkToken, updateProfile } from "../../utils/auth";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
-import { defaultClothingItems } from "../../utils/constants";
+
 
 function App() {
   const [activeModal, setActiveModal] = useState("");
-  const [selectedCard, setSelectedCard] = useState({});
+  const [selectedCard, setSelectedCard] = useState(null);
   const [temp, setTemp] = useState({ C: 0, F: 0 });
   const [currentTemperatureUnit, setCurrentTemperatureUnit] = useState("F");
   const [cards, setCards] = useState([]);
@@ -62,16 +62,15 @@ function App() {
     setCurrentTemperatureUnit((prevUnit) => (prevUnit === "C" ? "F" : "C"));
   };
 
-  const handleDeleteCard = (cardToDelete) => {
-    deleteItem(cardToDelete._id)
+  const handleDeleteCard = (id) => {
+    deleteItem(id)
       .then(() => {
-        setCards((prevCards) =>
-          prevCards.filter((card) => card._id !== cardToDelete._id)
-        );
+        setCards((prevCards) => prevCards.filter((card) => card._id !== id));
+        setSelectedCard(null);
         handleCloseModal();
       })
       .catch((err) => {
-        console.error("Error deleting card:", err);
+        console.error("Error deleting item:", err);
         alert("Failed to delete item. Please try again.");
       });
   };
@@ -87,18 +86,25 @@ function App() {
           localStorage.setItem("jwt", data.token);
           checkTokenValidity();
           handleCloseModal();
+        } else {
+          throw new Error("Token not received");
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error("Login error:", err);
+        alert("Failed to log in. Please check your credentials and try again.");
+      });
   };
 
   const handleRegister = ({ email, password, name, avatar }) => {
     register({ email, password, name, avatar })
       .then(() => {
         handleLogin({ email, password });
-        handleCloseModal();
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error("Registration error:", err);
+        alert("Failed to register. Please try again.");
+      });
   };
 
   const handleUpdateUser = ({ name, avatarUrl }) => {
@@ -163,21 +169,17 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      getItems()
-        .then((data) => {
-          console.log("Data received in App.jsx:", data);
-          let itemsToUse = Array.isArray(data.data) ? data.data : [];
-          setCards(itemsToUse);
-        })
-        .catch((err) => {
-          console.error("Error fetching items:", err);
-          setCards([]);
-        });
-    } else {
-      setCards(defaultClothingItems);
-    }
-  }, [isLoggedIn]);
+    getAllItems()
+      .then((data) => {
+        console.log("Data received in App.jsx:", data);
+        let itemsToUse = Array.isArray(data.data) ? data.data : [];
+        setCards(itemsToUse);
+      })
+      .catch((err) => {
+        console.error("Error fetching items:", err);
+        setCards([]);
+      });
+  }, []);
 
   useEffect(() => {
     const date = new Date().toLocaleDateString("en-US", {
@@ -291,6 +293,7 @@ function App() {
     </CurrentUserContext.Provider>
   );
 }
+
 
 const validateAvatarUrl = (url) => {
   if (url.includes('ibb.co')) {

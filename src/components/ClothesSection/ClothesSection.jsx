@@ -12,7 +12,7 @@ function ClothesSection({ filteredCards = [], onSelectCard, onCreateModal, onCar
         </button>
       </div>
       <div className="clothes-section__items">
-        {filteredCards.map((item) => (
+        {Array.isArray(filteredCards) && filteredCards.map((item) => (
           <ItemCard 
             key={item._id} 
             item={item} 
